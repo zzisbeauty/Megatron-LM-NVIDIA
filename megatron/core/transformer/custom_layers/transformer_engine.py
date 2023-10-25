@@ -2,7 +2,10 @@ from importlib.metadata import version
 from typing import Callable
 
 import torch
+
 import transformer_engine as te
+# from megatron.core.transformer.custom_layers import transformer_engine as te
+
 from pkg_resources import packaging
 
 from megatron.core.parallel_state import (
@@ -37,13 +40,13 @@ class TENorm:
     """
 
     def __new__(
-        cls,
-        config: TransformerConfig,
-        hidden_size: int,
-        eps: float = 1e-5,
-        sequence_parallel: bool = False,
-        normalization: str = "LayerNorm",
-        **kwargs
+            cls,
+            config: TransformerConfig,
+            hidden_size: int,
+            eps: float = 1e-5,
+            sequence_parallel: bool = False,
+            normalization: str = "LayerNorm",
+            **kwargs
     ):
         if normalization == "LayerNorm":
             instance = te.pytorch.LayerNorm(
@@ -78,16 +81,16 @@ class TELinear(te.pytorch.Linear):
     """
 
     def __init__(
-        self,
-        input_size: int,
-        output_size: int,
-        config: TransformerConfig,
-        parallel_mode: str,
-        init_method: Callable,
-        *,
-        bias: bool = True,
-        skip_bias_add: bool = False,
-        **kwargs
+            self,
+            input_size: int,
+            output_size: int,
+            config: TransformerConfig,
+            parallel_mode: str,
+            init_method: Callable,
+            *,
+            bias: bool = True,
+            skip_bias_add: bool = False,
+            **kwargs
     ):
         self.config = config
 
@@ -132,14 +135,14 @@ class TELayerNormColumnParallelLinear(te.pytorch.LayerNormLinear):
     """
 
     def __init__(
-        self,
-        input_size: int,
-        output_size: int,
-        config: TransformerConfig,
-        init_method: Callable,
-        bias: bool,
-        skip_bias_add: bool,
-        **kwargs
+            self,
+            input_size: int,
+            output_size: int,
+            config: TransformerConfig,
+            init_method: Callable,
+            bias: bool,
+            skip_bias_add: bool,
+            **kwargs
     ):
         self.config = config
         # TE returns a zero length Tensor when bias=False and
@@ -228,11 +231,11 @@ class TEDotProductAttention(te.pytorch.DotProductAttention):
     cp_stream: torch.cuda.Stream = None
 
     def __init__(
-        self,
-        config: TransformerConfig,
-        layer_number: int = 1,
-        attn_mask_type: AttnMaskType = AttnMaskType.padding,
-        **kwargs
+            self,
+            config: TransformerConfig,
+            layer_number: int = 1,
+            attn_mask_type: AttnMaskType = AttnMaskType.padding,
+            **kwargs
     ):
         self.config = config
 
@@ -246,7 +249,7 @@ class TEDotProductAttention(te.pytorch.DotProductAttention):
             kwargs["cp_stream"] = TEDotProductAttention.cp_stream
         else:
             assert (
-                self.config.context_parallel_size == 1
+                    self.config.context_parallel_size == 1
             ), "Only Transformer-Engine version > 0.13.0 supports context parallelism"
 
         super().__init__(
